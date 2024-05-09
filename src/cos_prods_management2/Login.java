@@ -277,15 +277,31 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if (UsernameTb.getText().isEmpty() || PasswordTb.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "enter username or password");
-
-        } else if (UsernameTb.getText().equals("Admin") || PasswordTb.getText().equals("Admin")) {
-            new Dashboard().setVisible(true);
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Wrong username or password");
+        String username = UsernameTb.getText();
+    String password = PasswordTb.getText();
+    
+    if(username.isEmpty() || password.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter both username and password");
+    } else {
+        // Assuming you have a database connection object named "conn"
+        try {
+            String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+            PreparedStatement pst = con.prepareStatement(query);
+            pst.setString(1, username);
+            pst.setString(2, password);
+            ResultSet rs = pst.executeQuery();
+            if(rs.next()) {
+                // Login successful
+                new Dashboard().setVisible(true);
+                this.dispose();
+            } else {
+                // Login failed
+                JOptionPane.showMessageDialog(this, "Incorrect username or password");
+            }
+        } catch(SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
+    }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void PasswordTbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PasswordTbActionPerformed
